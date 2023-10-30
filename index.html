@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Authentication and Storage Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <canvas id="waterChart" width="400" height="200"></canvas>
+    <h4 id="totalLiters"></h4>
+    <button >CLICK</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+        import { getStorage, ref as sRef, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyABOi1ik3cZwKJVntQF7t_kjqUOz91y-5I",
+            authDomain: "iot-aws-a65d9.firebaseapp.com",
+            databaseURL: "https://iot-aws-a65d9-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "iot-aws-a65d9",
+            storageBucket: "iot-aws-a65d9.appspot.com",
+            messagingSenderId: "545246582412",
+            appId: "1:545246582412:web:5a4d57f64149a919568da9",
+    
+  };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        function authenticateUser(email, password) {
+            return signInWithEmailAndPassword(auth, email, password);
+        }
+
+        function fetchDataFromStorage(filePath) {
+            const storageRef = sRef(storage, filePath);
+
+            return getDownloadURL(storageRef)
+                .then((url) => {
+                    return fetch(url)
+                        .then((response) => response.text());
+                });
+        }
+
+        
+            const email = prompt("Email");
+            const password = prompt("Password");
+            const filePath = prompt("Paath");
+
+            authenticateUser(email, password)
+                .then(() => {
+                    fetchDataFromStorage(filePath)
+                        .then((data) => {
+                            console.log("File content:", data);
+                            // Now you can work with the file content (data variable)
+                        })
+                        .catch((error) => {
+                            console.error("Error fetching file:", error);
+                        });
+                })
+                .catch((error) => {
+                    console.error("Authentication error:", error);
+                });
+        
+    </script>
+</body>
+
+</html>
